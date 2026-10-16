@@ -3,6 +3,7 @@ import pandas as pd
 MIN_CHARS = 200
 MAX_CHARS = 1000
 MAX_CHUNKS_PER_ARTICLE = 5
+MIN_CHUNK_CHARS = 50
 
 
 def chunk_text(text, max_chars=MAX_CHARS):
@@ -40,6 +41,8 @@ def build_chunks(df):
         if len(text) < MIN_CHARS:
             continue
         for i, chunk in enumerate(chunk_text(text)[:MAX_CHUNKS_PER_ARTICLE]):
+            if len(chunk) < MIN_CHUNK_CHARS:
+                continue
             rows.append(
                 {
                     "article_id": article.id,
