@@ -1,16 +1,18 @@
 from contextlib import asynccontextmanager
 
-import faiss
-import pandas as pd
 from fastapi import FastAPI, HTTPException, Query, Request
-from sentence_transformers import SentenceTransformer
 
 from searcher import Searcher
 
 EF_SEARCH = 64
 
+
 @asynccontextmanager
 async def lifespan(app):
+    import faiss
+    import pandas as pd
+    from sentence_transformers import SentenceTransformer
+
     chunks = pd.read_parquet("data/chunks.parquet")
     index = faiss.read_index("indexes/hnsw.faiss")
     faiss.ParameterSpace().set_index_parameter(index, "efSearch", EF_SEARCH)
