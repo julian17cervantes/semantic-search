@@ -40,3 +40,9 @@ def test_missing_query_is_rejected(client):
 
 def test_k_above_limit_is_rejected(client):
     assert client.get("/search", params={"q": "hello", "k": 21}).status_code == 422
+
+
+def test_home_page(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "Semantic Search" in response.text
