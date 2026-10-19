@@ -56,8 +56,20 @@ def first_rank(chunk_ids, expected):
     return None
 
 
-bm25_ranks = [first_rank(ids, e) for ids, e in zip(bm25_ids, usable["expected_set"])]
-semantic_ranks = [first_rank(ids, e) for ids, e in zip(semantic_ids, usable["expected_set"])]
+def rrf(rankings, k=60):
+    scores = {}
+    for ranking in rankings:
+        for rank, chunk_id in enumerate(ranking, 1):
+            scores[chunk_id] = scores.get(chunk_id, 0.0) + 1.0 / (k + rank)
+    return sorted(scores, key=scores.get, reverse=True)
+
+
+hybrid_ids = [rrf([b, s]) for b, s in zip(bm25_ids, semantic_ids)]
+
+expected = usable["expected_set"]
+bm25_ranks = [first_rank(ids, e) for ids, e in zip(bm25_ids, expected)]
+semantic_ranks = [first_rank(ids, e) for ids, e in zip(semantic_ids, expected)]
+hybrid_ranks = [first_rank(ids, e) for ids, e in zip(hybrid_ids, expected)]
 
 
 def summarize(name, ranks):
@@ -73,7 +85,8 @@ def summarize(name, ranks):
 print()
 summarize("BM25", bm25_ranks)
 summarize("semantic", semantic_ranks)
+summarize("hybrid", hybrid_ranks)
 
 print("\nrank of the right article (- means not in the top 10):")
-for q, b, s in zip(usable["query"], bm25_ranks, semantic_ranks):
-    print(f"  BM25 {b or '-':>2}  semantic {s or '-':>2}  {q}")
+for q, b, s, h in zip(usable["query"], bm25_ranks, semantic_ranks, hybrid_ranks):
+    print(f"  BM25 {b or '-':>2}  semantic {s or '-':>2}  hybrid {h or '-':>2}  {q}")
