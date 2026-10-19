@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Semantic Search</title>
+<style>
+  :root { --bg:#fff; --fg:#1a1a1a; --muted:#666; --card:#f5f5f7; --accent:#2563eb; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#111; --fg:#eee; --muted:#999; --card:#1c1c1f; --accent:#6ea8fe; }
+  }
+  body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--fg);
+         max-width: 760px; margin: 2rem auto; padding: 0 1rem; }
+  form { display: flex; gap: .5rem; }
+  input { flex: 1; padding: .7rem; font-size: 1rem; border: 1px solid var(--muted);
+          border-radius: 8px; background: var(--card); color: var(--fg); }
+  button { padding: .7rem 1.2rem; font-size: 1rem; border: 0; border-radius: 8px;
+           background: var(--accent); color: #fff; cursor: pointer; }
+  .meta { color: var(--muted); margin: 1rem 0; font-size: .9rem; }
+  .card { background: var(--card); padding: 1rem; border-radius: 8px; margin-bottom: .8rem; }
+  .card a { color: var(--accent); font-weight: 600; text-decoration: none; }
+  .score { color: var(--muted); font-size: .85rem; float: right; }
+  .snippet { margin-top: .4rem; white-space: pre-line; }
+</style>
+</head>
+<body>
+<h1>Semantic Search</h1>
+<div class="meta">Simple English Wikipedia, 308k text chunks</div>
+<form id="form">
+  <input id="q" placeholder="Ask a question, like: why do we have seasons?" autofocus>
+  <button type="submit">Search</button>
+</form>
+<div class="meta" id="meta"></div>
+<div id="results"></div>
+<script>
+const form = document.getElementById("form");
+const box = document.getElementById("q");
+const meta = document.getElementById("meta");
+const out = document.getElementById("results");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const q = box.value.trim();
+  if (!q) return;
+  meta.textContent = "Searching...";
+  out.replaceChildren();
+  try {
+    const res = await fetch("/search?" + new URLSearchParams({ q, k: 5 }));
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+    meta.textContent = data.results.length + " results, encode " + data.encode_ms +
+      " ms, search " + data.search_ms + " ms";
+    for (const r of data.results) {
+      const card = document.createElement("div");
+      card.className = "card";
+      const score = document.createElement("span");
+      score.className = "score";
+      score.textContent = r.score.toFixed(3);
+      const link = document.createElement("a");
+      link.href = r.url;
+      link.target = "_blank";
+      link.rel = "noopener";
+      link.textContent = r.title;
+      const text = document.createElement("div");
+      text.className = "snippet";
+      text.textContent = r.snippet;
+      card.append(score, link, text);
+      out.append(card);
+    }
+  } catch (err) {
+    meta.textContent = "Search failed: " + err.message;
+  }
+});
+</script>
+</body>
+</html>

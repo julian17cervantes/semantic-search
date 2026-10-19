@@ -4,6 +4,8 @@ from fastapi import FastAPI, HTTPException, Query, Request
 
 from searcher import Searcher
 
+from fastapi.responses import FileResponse
+
 EF_SEARCH = 64
 
 
@@ -35,3 +37,8 @@ def search(request: Request, q: str = Query(..., max_length=500), k: int = Query
     if not q.strip():
         raise HTTPException(status_code=400, detail="Query must not be empty")
     return request.app.state.searcher.search(q.strip(), k)
+
+
+@app.get("/", include_in_schema=False)
+def home():
+    return FileResponse("static/index.html")
