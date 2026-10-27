@@ -42,7 +42,7 @@ Semantic search won clearly. The equal-weight hybrid beat BM25 but not semantic 
 1. `download.py` fetches Simple English Wikipedia from Hugging Face.
 2. `chunking.py` drops short articles, packs paragraphs into chunks, and drops tiny fragments.
 3. `embed.py` embeds the chunks in resumable batches (about 11.5 minutes on an Apple Silicon laptop).
-4. `build_index.py` builds the exact index, and `bench_index.py` builds the HNSW index and measures recall and speed against it.
+4. `build_index.py` builds the exact index and HNSW indexes, and `bench_index.py` measures recall and speed against the exact one.
 5. `main.py` serves `GET /search?q=...&k=5` and reports encode and search time for every request.
 6. `compare.py` evaluates BM25, semantic, and hybrid search on `eval/queries.csv`.
 
@@ -58,8 +58,8 @@ pip install -r requirements.txt
 python download.py
 python chunking.py
 python embed.py
-python build_index.py
-python bench_index.py
+python build_index.py # Builds the exact and HNSW indexes
+python bench_index.py # optional: measures recall and speed
 uvicorn main:app
 ```
 

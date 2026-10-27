@@ -12,7 +12,6 @@ shards = sorted(s for s in glob.glob("data/embeddings/shard_*.npy") if ".tmp." n
 vectors = np.vstack([np.load(s) for s in shards])
 dim = vectors.shape[1]
 
-# Use random chunks as queries. Each one finds itself first, so drop that match.
 rng = np.random.default_rng(1)
 query_ids = rng.choice(len(vectors), NUM_QUERIES, replace=False)
 queries = vectors[query_ids]
@@ -36,12 +35,7 @@ _, exact = flat.search(queries, K + 1)
 exact = drop_self(exact, query_ids)
 print(f"exact (flat): {ms_per_query(flat):.2f} ms per query, recall 1.000")
 
-hnsw = faiss.IndexHNSWFlat(dim, 32, faiss.METRIC_INNER_PRODUCT)
-hnsw.hnsw.efConstruction = 200
-start = time.time()
-hnsw.add(vectors)
-print(f"HNSW build time: {time.time() - start:.0f} s")
-faiss.write_index(hnsw, "indexes/hnsw.faiss")
+hnsw = faiss.read_index("indexes/hnsw.faiss")
 
 for ef in EF_SEARCH_VALUES:
     hnsw.hnsw.efSearch = ef
