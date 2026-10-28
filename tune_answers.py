@@ -117,3 +117,23 @@ for r in results:
 print(f"\nMISSES FOR THE TOP VARIANT ({results[0]['variant'].strip()})")
 for q, picked in results[0]["misses"]:
     print(f"  {q}  ->  {picked!r}")
+
+picked_all = [pick_vote(reads[:10]) for reads in all_reads]
+
+print("\nCUTOFF TABLE (k=10, titles on, vote)")
+print(f"{'cutoff':>7} {'answered':>9} {'correct':>8} {'wrong':>6}")
+for cutoff in [0, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0]:
+    answered = correct = 0
+    for g, picked in zip(golds, picked_all):
+        if picked is not None and picked[1] >= cutoff:
+            answered += 1
+            correct += is_correct(picked[0], g)
+    print(f"{cutoff:>7} {answered:>9} {correct:>8} {answered - correct:>6}")
+
+print("\nPER QUESTION (vote score, correct?)")
+for q, g, picked in zip(questions, golds, picked_all):
+    if picked is None:
+        print(f"   --  no answer  {q}")
+    else:
+        mark = "ok   " if is_correct(picked[0], g) else "WRONG"
+        print(f"{picked[1]:>5.2f}  {mark}  {picked[0]!r}  {q}")
