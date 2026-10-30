@@ -1,4 +1,7 @@
 import os
+import json
+
+from pathlib import Path
 
 os.environ.setdefault("OMP_NUM_THREADS", "1")
 
@@ -53,3 +56,23 @@ print("\nWRONG OR WITHHELD")
 for o in outcomes:
     if not o["correct"]:
         print(f"  [{o['confidence']}] {o['score']:.2f}  {o['answer']!r}  {o['question']}")
+
+if len(sys.argv) > 2:
+    summary = {
+        "file": path,
+        "questions": total,
+        "answered": len(answered),
+        "correct": correct,
+        "wrong": len(answered) - correct,
+        "ms_per_question": round(ms),
+        "settings": {
+            "read_top_k": cfg.READ_TOP_K,
+            "use_titles": cfg.USE_TITLES,
+            "no_answer_below": cfg.NO_ANSWER_BELOW,
+            "confident_from": cfg.CONFIDENT_FROM,
+        },
+        "outcomes": outcomes,
+    }
+    Path(sys.argv[2]).parent.mkdir(exist_ok=True)
+    Path(sys.argv[2]).write_text(json.dumps(summary, indent=2, default=str))
+    print("saved", sys.argv[2])
