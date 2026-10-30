@@ -1,0 +1,256 @@
+{
+  "file": "eval/answers_test.csv",
+  "questions": 30,
+  "answered": 23,
+  "correct": 22,
+  "wrong": 1,
+  "ms_per_question": 208,
+  "settings": {
+    "read_top_k": 10,
+    "use_titles": true,
+    "no_answer_below": 0.5,
+    "confident_from": 1.0
+  },
+  "outcomes": [
+    {
+      "question": "What is the capital of Italy?",
+      "answer": "Rome",
+      "score": 2.462,
+      "confidence": "high",
+      "source": "Italy",
+      "correct": true
+    },
+    {
+      "question": "Who wrote The Great Gatsby?",
+      "answer": "F. Scott Fitzgerald",
+      "score": 2.506,
+      "confidence": "high",
+      "source": "The Great Gatsby",
+      "correct": true
+    },
+    {
+      "question": "What is the longest river in South America?",
+      "answer": null,
+      "score": 0.333,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "Who developed the first successful polio vaccine?",
+      "answer": "Jonas Salk",
+      "score": 2.958,
+      "confidence": "high",
+      "source": "Poliomyelitis",
+      "correct": true
+    },
+    {
+      "question": "What is the largest continent?",
+      "answer": null,
+      "score": 0.316,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "Which brothers built and flew the first successful airplane?",
+      "answer": "Wright brothers",
+      "score": 0.52,
+      "confidence": "low",
+      "source": "Aviation",
+      "correct": true
+    },
+    {
+      "question": "What is the capital of Brazil?",
+      "answer": "Bras\u00edlia",
+      "score": 2.737,
+      "confidence": "high",
+      "source": "Brazil",
+      "correct": true
+    },
+    {
+      "question": "What is the currency of Japan?",
+      "answer": "JPY",
+      "score": 0.894,
+      "confidence": "low",
+      "source": "ISO 4217",
+      "correct": false
+    },
+    {
+      "question": "Who formulated the laws of motion and universal gravitation?",
+      "answer": "Newton",
+      "score": 0.645,
+      "confidence": "low",
+      "source": "Principle of relativity",
+      "correct": true
+    },
+    {
+      "question": "What is the tallest building in the world?",
+      "answer": "Burj Khalifa",
+      "score": 0.534,
+      "confidence": "low",
+      "source": "List of tallest buildings",
+      "correct": true
+    },
+    {
+      "question": "What is the smallest country in the world?",
+      "answer": "Vatican City",
+      "score": 1.601,
+      "confidence": "high",
+      "source": "Country",
+      "correct": true
+    },
+    {
+      "question": "Who painted The Starry Night?",
+      "answer": "Vincent van Gogh",
+      "score": 1.282,
+      "confidence": "high",
+      "source": "The Starry Night",
+      "correct": true
+    },
+    {
+      "question": "What is the largest bone in the human body?",
+      "answer": null,
+      "score": 0.139,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "Who was the first woman to travel into space?",
+      "answer": "Valentina Tereshkova",
+      "score": 1.586,
+      "confidence": "high",
+      "source": "Vostok 1",
+      "correct": true
+    },
+    {
+      "question": "Which ocean lies between Europe and North America?",
+      "answer": null,
+      "score": 0.192,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "What is the capital of Spain?",
+      "answer": null,
+      "score": 0.495,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "Who wrote A Christmas Carol?",
+      "answer": "Charles Dickens",
+      "score": 0.962,
+      "confidence": "low",
+      "source": "A Christmas Carol",
+      "correct": true
+    },
+    {
+      "question": "What is the chemical formula for water?",
+      "answer": "H2O",
+      "score": 1.516,
+      "confidence": "high",
+      "source": "Water",
+      "correct": true
+    },
+    {
+      "question": "What is the fastest land animal?",
+      "answer": "cheetah",
+      "score": 0.815,
+      "confidence": "low",
+      "source": "Terrestrial locomotion",
+      "correct": true
+    },
+    {
+      "question": "In what year did the Titanic sink?",
+      "answer": "1912",
+      "score": 3.23,
+      "confidence": "high",
+      "source": "Titanic (1997 movie)",
+      "correct": true
+    },
+    {
+      "question": "Who led the Soviet Union during the Cuban Missile Crisis?",
+      "answer": "Nikita Khrushchev",
+      "score": 1.538,
+      "confidence": "high",
+      "source": "Cuban Missile Crisis",
+      "correct": true
+    },
+    {
+      "question": "What is the capital of Germany?",
+      "answer": "Berlin",
+      "score": 0.598,
+      "confidence": "low",
+      "source": "Berlin",
+      "correct": true
+    },
+    {
+      "question": "Who invented dynamite?",
+      "answer": "Alfred Nobel",
+      "score": 2.468,
+      "confidence": "high",
+      "source": "Dynamite",
+      "correct": true
+    },
+    {
+      "question": "What is the largest island in the world?",
+      "answer": null,
+      "score": 0.0,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "Which planet is famous for its rings?",
+      "answer": "Saturn",
+      "score": 1.098,
+      "confidence": "high",
+      "source": "Planetary ring",
+      "correct": true
+    },
+    {
+      "question": "Who was the first prime minister of independent India?",
+      "answer": "Jawaharlal Nehru",
+      "score": 1.274,
+      "confidence": "high",
+      "source": "List of prime ministers of India",
+      "correct": true
+    },
+    {
+      "question": "What is the main language spoken in Brazil?",
+      "answer": "Portuguese",
+      "score": 2.096,
+      "confidence": "high",
+      "source": "Spanish language",
+      "correct": true
+    },
+    {
+      "question": "What is the highest waterfall in the world?",
+      "answer": "Angel Falls",
+      "score": 1.291,
+      "confidence": "high",
+      "source": "Waterfall",
+      "correct": true
+    },
+    {
+      "question": "Who discovered the structure of DNA with Francis Crick?",
+      "answer": null,
+      "score": 0.395,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "What is the capital of Russia?",
+      "answer": "Moscow",
+      "score": 1.462,
+      "confidence": "high",
+      "source": "Russia",
+      "correct": true
+    }
+  ]
+}

@@ -1,7 +1,9 @@
 import pandas as pd
+import sys
 
 chunks = pd.read_parquet("data/chunks.parquet", columns=["text"])
-rows = pd.read_csv("eval/answers_dev.csv")
+path = sys.argv[1] if len(sys.argv) > 1 else "eval/answers_dev.csv"
+rows = pd.read_csv(path)
 
 print(f"{'chunks':>7}  question -> accepted answers")
 for question, answer in zip(rows["question"], rows["answer"]):
