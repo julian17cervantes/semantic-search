@@ -52,7 +52,7 @@ The settings were chosen on 25 tuning questions and frozen in `answer_settings.p
 | Low confidence | 7 answered, 6 correct |
 | Withheld | 7 |
 
-That is 22 of 30 correct overall, roughly 56% to 86% allowing for the small sample, and 22 of 23 correct among the answers given. The question-to-answer path averaged about 208 ms per question (one question at a time, on a laptop GPU, including encoding and search), versus about 6 ms for search alone.
+That is 22 of 30 correct overall, roughly 56% to 86% allowing for the small sample, and 22 of 23 correct among the answers given. Over 100 requests to GET /answer (one at a time, on a laptop GPU), the median was 193.3 ms and the p95 was 249.6 ms, of which reading the 10 chunks took a median of 186.7 ms.
 
 ## Limitations
 
