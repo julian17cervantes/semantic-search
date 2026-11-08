@@ -20,6 +20,17 @@ Measured on 27 hand-labeled questions. A hit means a chunk from the expected art
 
 Semantic search won clearly, and the service uses it. The equal-weight hybrid beat BM25 but not semantic search alone: compared with semantic search, it ranked the right article higher on 6 of the 27 queries, the same on 12, and lower on 9. I did not tune the fusion on these queries, to avoid fitting the test set.
 
+### Experiment: article titles in the searched text
+
+Chunks often don't say what their article is about, because the title carries that. I tested adding the title to the text that is embedded and indexed for BM25, on 30 development queries (`eval/retrieval_dev.csv`). The rule for adopting it was fixed before the run: semantic MRR must rise by at least 0.03 without lowering hit@10.
+
+| Semantic search | Without titles | With titles | Change (95% interval) |
+| --- | --- | --- | --- |
+| MRR | 0.640 | 0.699 | +0.059 (-0.009 to +0.145) |
+| hit@10 | 0.967 | 0.933 | -0.033 (-0.100 to 0.000) |
+
+MRR went up, but hit@10 dropped by one query, so the rule was not met and the service still uses the index without titles. With 30 queries, one query is 3.3 points, so this result is inconclusive. BM25 improved more clearly (MRR +0.062, interval +0.019 to +0.114), and the hybrid improved slightly, with intervals that include zero. The 30 test queries (`eval/retrieval_test.csv`) have not been scored.
+
 ### Index speed and accuracy
 
 Measured on the full corpus against exact search, with 1,000 queries:
