@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 import torch 
+import bm25s
 import faiss
 import pandas as pd
 from sentence_transformers import SentenceTransformer
@@ -50,7 +51,6 @@ if args.check_only:
     raise SystemExit(0)
 print("stemming:", "on" if stemmer else "off")
 
-# BM25 keyword search
 corpus_tokens = bm25s.tokenize(chunks["text"].tolist(), stopwords="en", stemmer=stemmer)
 bm25 = bm25s.BM25()
 bm25.index(corpus_tokens)
