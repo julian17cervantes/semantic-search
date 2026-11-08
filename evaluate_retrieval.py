@@ -26,6 +26,7 @@ parser.add_argument("queries", help="CSV with columns query and expected (altern
 parser.add_argument("--check-only", action="store_true", help="only check that the expected titles exist")
 parser.add_argument("--details", action="store_true", help="print the rank of every query")
 parser.add_argument("--save", help="write per-query ranks to this JSON file")
+parser.add_argument("--titled", action="store_true", help="use the index and BM25 text that include article titles")
 args = parser.parse_args()
 
 K_CHUNKS = 50
@@ -51,14 +52,15 @@ if args.check_only:
     raise SystemExit(0)
 print("stemming:", "on" if stemmer else "off")
 
-corpus_tokens = bm25s.tokenize(chunks["text"].tolist(), stopwords="en", stemmer=stemmer)
+texts = (chunks["title"] + ". " + chunks["text"]).tolist() if args.titled else chunks["text"].tolist()
+corpus_tokens = bm25s.tokenize(texts, stopwords="en", stemmer=stemmer)
 bm25 = bm25s.BM25()
 bm25.index(corpus_tokens)
 query_tokens = bm25s.tokenize(queries["query"].tolist(), stopwords="en", stemmer=stemmer)
 bm25_ids, _ = bm25.retrieve(query_tokens, k=K_CHUNKS)
 
 model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-index = faiss.read_index("indexes/hnsw.faiss")
+index = faiss.read_index("indexes/hnsw_titled.faiss" if args.titled else "indexes/hnsw.faiss")
 faiss.ParameterSpace().set_index_parameter(index, "efSearch", EF_SEARCH)
 vectors = model.encode(queries["query"].tolist(), normalize_embeddings=True)
 semantic_ids = []

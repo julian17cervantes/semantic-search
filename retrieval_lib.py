@@ -43,3 +43,16 @@ def bootstrap_ci(ranks, metric, n=2000, seed=0, level=0.95):
         values.append(metric(sample))
     low, high = np.percentile(values, [(1 - level) / 2 * 100, (1 + level) / 2 * 100])
     return float(low), float(high)
+
+def paired_bootstrap_diff(ranks_a, ranks_b, metric, n=2000, seed=0, level=0.95):
+    if len(ranks_a) != len(ranks_b):
+        raise ValueError("both runs must score the same queries")
+    rng = np.random.default_rng(seed)
+    a, b = list(ranks_a), list(ranks_b)
+    size = len(a)
+    diffs = []
+    for _ in range(n):
+        idx = rng.integers(0, size, size)
+        diffs.append(metric([b[i] for i in idx]) - metric([a[i] for i in idx]))
+    low, high = np.percentile(diffs, [(1 - level) / 2 * 100, (1 + level) / 2 * 100])
+    return metric(b) - metric(a), float(low), float(high)

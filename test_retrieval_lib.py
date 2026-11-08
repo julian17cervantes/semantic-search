@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from retrieval_lib import bootstrap_ci, first_rank, hit_at, mrr, rrf
+from retrieval_lib import bootstrap_ci, first_rank, hit_at, mrr, paired_bootstrap_diff, rrf
 
 TITLES = np.array(["A", "A", "B", "C"])
 
@@ -49,3 +49,21 @@ def test_bootstrap_interval_contains_the_estimate_and_is_repeatable():
     low, high = bootstrap_ci(ranks, metric)
     assert low <= metric(ranks) <= high
     assert bootstrap_ci(ranks, metric) == (low, high)
+
+def test_paired_difference_of_identical_runs_is_zero():
+    ranks = [1, 2, None, 4]
+    diff, low, high = paired_bootstrap_diff(ranks, ranks, lambda r: hit_at(r, 5))
+    assert (diff, low, high) == (0.0, 0.0, 0.0)
+
+
+def test_paired_difference_shows_a_consistent_improvement():
+    worse = [5, 5, 5, 5, 5, 5]
+    better = [1, 1, 1, 1, 1, 1]
+    diff, low, high = paired_bootstrap_diff(worse, better, mrr)
+    assert diff == pytest.approx(0.8)
+    assert low > 0
+
+
+def test_paired_difference_needs_the_same_queries():
+    with pytest.raises(ValueError):
+        paired_bootstrap_diff([1, 2], [1], mrr)
