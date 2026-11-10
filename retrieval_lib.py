@@ -56,3 +56,14 @@ def paired_bootstrap_diff(ranks_a, ranks_b, metric, n=2000, seed=0, level=0.95):
         diffs.append(metric([b[i] for i in idx]) - metric([a[i] for i in idx]))
     low, high = np.percentile(diffs, [(1 - level) / 2 * 100, (1 + level) / 2 * 100])
     return metric(b) - metric(a), float(low), float(high)
+
+def rerank_head(ids, head_scores, depth):
+    head = list(ids[:depth])
+    if len(head_scores) != len(head):
+        raise ValueError("need one score per reranked id")
+    order = sorted(range(len(head)), key=lambda j: -head_scores[j])
+    return [head[j] for j in order] + list(ids[depth:])
+
+
+def meets_adoption_rule(mrr_change, hit10_change, median_added_ms, min_mrr_gain=0.03, max_median_ms=100.0):
+    return mrr_change >= min_mrr_gain and hit10_change >= -1e-9 and median_added_ms < max_median_ms
