@@ -87,7 +87,16 @@ At efSearch=64, HNSW is about 20x faster than exact search while finding 99.7% o
 
 ### Service latency
 
-For `GET /search`, over 200 requests after 20 warm-up requests: median 6.1 ms and p95 10.5 ms end to end. Encoding the query took a median of 4.9 ms and the index search 0.4 ms.
+For `GET /search`, over 200 requests after 20 warm-up requests: median 6.1 ms and p95 10.5 ms end to end. Encoding the query took a median of 4.9 ms and the index search 0.4 ms. 
+
+With and without reranking, over 100 requests per mode after 10 warm-up requests (one client, one request at a time, modes interleaved, on a laptop GPU):
+
+| Mode | Median (ms) | p95 (ms) |
+| --- | --- | --- |
+| `GET /search` | 6.6 | 7.8 |
+| `GET /search?rerank=true` | 68.4 | 87.9 |
+
+In the reranked request's median, encoding took 5.2 ms, the index search 0.3 ms, and reranking the top 20 results 61.7 ms. Reranking therefore makes a search about 10 times slower, which is why it is opt-in. The earlier measurement above used a different query set on a busier machine.
 
 ## Answering questions
 
