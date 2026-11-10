@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from retrieval_lib import bootstrap_ci, first_rank, hit_at, mrr, paired_bootstrap_diff, rrf
+from retrieval_lib import bootstrap_ci, first_rank, hit_at, meets_adoption_rule, mrr, paired_bootstrap_diff, rerank_head, rrf
 
 TITLES = np.array(["A", "A", "B", "C"])
 
@@ -67,3 +67,27 @@ def test_paired_difference_shows_a_consistent_improvement():
 def test_paired_difference_needs_the_same_queries():
     with pytest.raises(ValueError):
         paired_bootstrap_diff([1, 2], [1], mrr)
+
+def test_rerank_head_reorders_only_the_head():
+    assert rerank_head([10, 11, 12, 13], [0.1, 0.9, 0.5], depth=3) == [11, 12, 10, 13]
+
+
+def test_rerank_head_keeps_the_original_order_on_ties():
+    assert rerank_head([10, 11, 12], [1.0, 1.0, 1.0], depth=3) == [10, 11, 12]
+
+
+def test_rerank_head_handles_a_depth_larger_than_the_list():
+    assert rerank_head([10, 11], [0.2, 0.8], depth=20) == [11, 10]
+
+
+def test_rerank_head_needs_one_score_per_id():
+    with pytest.raises(ValueError):
+        rerank_head([10, 11, 12], [0.1, 0.2], depth=3)
+
+
+def test_adoption_rule():
+    assert meets_adoption_rule(0.05, 0.0, 40.0)
+    assert not meets_adoption_rule(0.02, 0.0, 40.0)  # gain too small
+    assert not meets_adoption_rule(0.05, -0.02, 40.0)  # hit@10 dropped
+    assert not meets_adoption_rule(0.05, 0.0, 150.0)  # too slow
+    assert not meets_adoption_rule(0.03, 0.0, 100.0)  # latency must be strictly under 100
