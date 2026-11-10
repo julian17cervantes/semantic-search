@@ -8,7 +8,7 @@ A semantic search engine over Simple English Wikipedia, built end to end: data c
 
 **Corpus:** 241,787 articles, cleaned down to 196,031 articles and split into 308,179 chunks of up to 1,000 characters.
 
-### Retrieval quality
+### Earlier 27-query set
 
 Measured on 27 hand-labeled questions. A hit means a chunk from the expected article appeared in the top results, with results deduplicated by article.
 
@@ -19,6 +19,46 @@ Measured on 27 hand-labeled questions. A hit means a chunk from the expected art
 | Hybrid (reciprocal rank fusion, untuned) | 0.41 | 0.81 | 0.89 | 0.584 |
 
 Semantic search won clearly, and the service uses it. The equal-weight hybrid beat BM25 but not semantic search alone: compared with semantic search, it ranked the right article higher on 6 of the 27 queries, the same on 12, and lower on 9. I did not tune the fusion on these queries, to avoid fitting the test set.
+
+## Retrieval evaluation v2
+
+The 27-query set above was looked at many times while building, so I wrote two fresh sets before scoring anything: 60 development queries (`eval/retrieval_dev_all.csv`, written in two batches) and 30 test queries (`eval/retrieval_test.csv`). Each set mixes queries that use the article's own words, paraphrases, and definition-style questions. The only edits allowed after writing were fixing expected titles that do not exist in the corpus. The test set was scored once, after the settings were frozen. Intervals are 95% bootstrap intervals over queries.
+
+**Test set (30 queries):**
+
+| Method | hit@1 | hit@5 | hit@10 | MRR |
+| --- | --- | --- | --- | --- |
+| BM25 | 0.13 [0.03-0.27] | 0.57 [0.40-0.73] | 0.73 [0.57-0.90] | 0.29 [0.19-0.41] |
+| Semantic | 0.63 [0.47-0.80] | 0.87 [0.73-0.97] | 0.93 [0.83-1.00] | 0.74 [0.61-0.87] |
+| Hybrid (untuned fusion) | 0.43 [0.27-0.60] | 0.87 [0.73-0.97] | 0.90 [0.77-1.00] | 0.60 [0.46-0.74] |
+
+### Experiment: article titles in the searched text
+
+On 30 dev queries, adding the title to the embedded text raised semantic MRR by 0.059 (interval -0.009 to +0.145) but lowered hit@10 by one query. The adoption rule, fixed beforehand, required an MRR gain of at least 0.03 without lowering hit@10, so it was not met and the served index has no titles. The result is inconclusive.
+
+### Experiment: cross-encoder reranking
+
+A cross-encoder (`cross-encoder/ms-marco-MiniLM-L6-v2`, Apache-2.0) rescores the top 20 semantic results, reading the title and the chunk together with the query. Before running anything, I fixed these settings and an adoption rule: an MRR gain of at least 0.03, no drop in hit@10, and a median added latency under 100 ms.
+
+| Semantic search + rerank | Semantic | + rerank | Change (95% interval) |
+| --- | --- | --- | --- |
+| **Dev, 60 queries:** MRR | 0.709 | 0.822 | +0.113 (+0.048 to +0.181) |
+| **Test, 30 queries:** hit@1 | 0.633 | 0.767 | +0.133 (0.000 to +0.300) |
+| Test: hit@5 | 0.867 | 0.933 | +0.067 (0.000 to +0.167) |
+| Test: hit@10 | 0.933 | 0.967 | +0.033 (0.000 to +0.100) |
+| Test: MRR | 0.741 | 0.830 | +0.089 (+0.009 to +0.180) |
+
+On the test set, 8 queries ranked higher, 1 lower, and 21 were unchanged. The gain held on the unseen queries, but the lower end of the MRR interval is only +0.009, so it is confirmed narrowly, and the hit@k intervals include zero. A version without titles gave a smaller dev gain (MRR +0.070).
+
+Reranking costs time: the reranking step took a median of 61 ms (p95 78 ms) per query on a laptop GPU, measured one query at a time, against about 6 ms for plain search. It is therefore opt-in: `GET /search?rerank=true`. The `/answer` endpoint does not use it, so the answer-step results above are unchanged.
+
+**Limits of this evaluation**
+
+- The sets are small (30 test queries), so intervals are wide. Most queries are well-known topics, and I wrote them myself.
+- The 60 dev queries were used for several comparisons, so dev results are likely a little optimistic.
+- A hit means the right article appeared, not that the passage answers the question.
+- The reranker was trained on web-search data and is English-only. Latency was measured on one laptop, not under load.
+- Reranking only reorders the top 20 results, so it cannot fix a query whose article is outside them (1 of the 30 test queries).
 
 ### Experiment: article titles in the searched text
 
@@ -47,7 +87,16 @@ At efSearch=64, HNSW is about 20x faster than exact search while finding 99.7% o
 
 ### Service latency
 
-For `GET /search`, over 200 requests after 20 warm-up requests: median 6.1 ms and p95 10.5 ms end to end. Encoding the query took a median of 4.9 ms and the index search 0.4 ms.
+For `GET /search`, over 200 requests after 20 warm-up requests: median 6.1 ms and p95 10.5 ms end to end. Encoding the query took a median of 4.9 ms and the index search 0.4 ms. 
+
+With and without reranking, over 100 requests per mode after 10 warm-up requests (one client, one request at a time, modes interleaved, on a laptop GPU):
+
+| Mode | Median (ms) | p95 (ms) |
+| --- | --- | --- |
+| `GET /search` | 6.6 | 7.8 |
+| `GET /search?rerank=true` | 68.4 | 87.9 |
+
+In the reranked request's median, encoding took 5.2 ms, the index search 0.3 ms, and reranking the top 20 results 61.7 ms. Reranking therefore makes a search about 10 times slower, which is why it is opt-in. The earlier measurement above used a different query set on a busier machine.
 
 ## Answering questions
 

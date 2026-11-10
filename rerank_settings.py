@@ -1,0 +1,4 @@
+RERANK_MODEL = "cross-encoder/ms-marco-MiniLM-L6-v2"
+RERANK_DEPTH = 20
+RERANK_USE_TITLES = True
+RERANK_DEFAULT_ON = False
