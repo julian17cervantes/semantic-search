@@ -67,3 +67,10 @@ def rerank_head(ids, head_scores, depth):
 
 def meets_adoption_rule(mrr_change, hit10_change, median_added_ms, min_mrr_gain=0.03, max_median_ms=100.0):
     return mrr_change >= min_mrr_gain and hit10_change >= -1e-9 and median_added_ms < max_median_ms
+
+def weighted_rrf(rankings, weights, k=60):
+    scores = {}
+    for ranking, weight in zip(rankings, weights):
+        for rank, chunk_id in enumerate(ranking, 1):
+            scores[chunk_id] = scores.get(chunk_id, 0.0) + weight / (k + rank)
+    return sorted(scores, key=scores.get, reverse=True)
