@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from retrieval_lib import bootstrap_ci, first_rank, hit_at, meets_adoption_rule, mrr, paired_bootstrap_diff, rerank_head, rrf
+from retrieval_lib import bootstrap_ci, first_rank, hit_at, meets_adoption_rule, mrr, paired_bootstrap_diff, rerank_head, rrf, weighted_rrf
 
 TITLES = np.array(["A", "A", "B", "C"])
 
@@ -87,7 +87,19 @@ def test_rerank_head_needs_one_score_per_id():
 
 def test_adoption_rule():
     assert meets_adoption_rule(0.05, 0.0, 40.0)
-    assert not meets_adoption_rule(0.02, 0.0, 40.0)  # gain too small
-    assert not meets_adoption_rule(0.05, -0.02, 40.0)  # hit@10 dropped
-    assert not meets_adoption_rule(0.05, 0.0, 150.0)  # too slow
-    assert not meets_adoption_rule(0.03, 0.0, 100.0)  # latency must be strictly under 100
+    assert not meets_adoption_rule(0.02, 0.0, 40.0)
+    assert not meets_adoption_rule(0.05, -0.02, 40.0)
+    assert not meets_adoption_rule(0.05, 0.0, 150.0)
+    assert not meets_adoption_rule(0.03, 0.0, 100.0)
+
+def test_weighted_rrf_with_equal_weights_matches_plain_rrf():
+    assert weighted_rrf([[1, 2], [2, 3]], [1.0, 1.0]) == rrf([[1, 2], [2, 3]])
+
+
+def test_a_zero_weight_ignores_that_list():
+    assert weighted_rrf([[9, 8, 7], [1, 2, 3]], [0.0, 1.0])[:3] == [1, 2, 3]
+
+
+def test_the_heavier_list_wins_a_disagreement():
+    assert weighted_rrf([[1, 2], [2, 1]], [2.0, 1.0]) == [1, 2]
+    assert weighted_rrf([[1, 2], [2, 1]], [1.0, 2.0]) == [2, 1]
