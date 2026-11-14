@@ -199,6 +199,17 @@ The data, embeddings, and indexes are large (the HNSW index is about 530 MB) and
 
 A note for Mac users: loading `faiss` before `torch` crashed with a segmentation fault on the machine this was built on, so the scripts that load the reader import `torch` first.
 
+Tested from a fresh clone on macOS (Apple Silicon) with Python 3.13: the install, the tests, the full pipeline above, and both endpoints worked. Other platforms were not tried.
+
+To reproduce the evaluations:
+
+```bash
+python evaluate_retrieval.py eval/retrieval_dev_all.csv --details
+python evaluate_retrieval.py eval/retrieval_test.csv
+python rerank_experiment.py eval/retrieval_dev_all.csv --baseline results/retrieval_dev_all_baseline.json
+python hybrid_experiment.py eval/retrieval_dev_all.csv --grid --baseline results/retrieval_dev_all_baseline.json
+```
+
 ## API
 
 | Method | Path | Description |
