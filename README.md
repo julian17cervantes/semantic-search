@@ -60,6 +60,35 @@ Reranking costs time: the reranking step took a median of 61 ms (p95 78 ms) per 
 - The reranker was trained on web-search data and is English-only. Latency was measured on one laptop, not under load.
 - Reranking only reorders the top 20 results, so it cannot fix a query whose article is outside them (1 of the 30 test queries).
 
+### Experiment: tuning the hybrid fusion weight
+
+The untuned hybrid (equal weights) lost to semantic search alone in every comparison, so I tested whether a lower BM25 weight would help. The fusion is reciprocal rank fusion with a weight on the BM25 list and semantic fixed at 1.0. Before running anything, I fixed the grid of weights and two rules: select the weight with the highest MRR on the 60 dev queries (ties to the smaller weight), then adopt it only if, on the 30 test queries, MRR rises by at least 0.03 with a 95% interval that excludes zero and hit@10 does not drop.
+
+**Dev set (60 queries):**
+
+| BM25 weight | MRR | hit@10 |
+| --- | --- | --- |
+| 0.0 (semantic alone) | 0.709 | 0.933 |
+| 0.1 (selected) | 0.714 | 0.933 |
+| 0.2 | 0.694 | 0.933 |
+| 0.3 | 0.691 | 0.933 |
+| 0.5 | 0.658 | 0.933 |
+| 0.75 | 0.647 | 0.933 |
+| 1.0 (equal weights) | 0.634 | 0.917 |
+
+**Test set (30 queries), weight 0.1 against semantic alone:**
+
+| Metric | Semantic | Hybrid | Change (95% interval) |
+| --- | --- | --- | --- |
+| hit@1 | 0.633 | 0.667 | +0.033 (-0.067 to +0.133) |
+| hit@5 | 0.867 | 0.833 | -0.033 (-0.100 to 0.000) |
+| hit@10 | 0.933 | 0.933 | 0.000 |
+| MRR | 0.741 | 0.753 | +0.013 (-0.044 to +0.071) |
+
+**Result: not confirmed, so the service stays semantic-only.** The dev gain for the selected weight (+0.005 MRR) was smaller than one query moving up one rank, and past a weight of 0.1, adding keyword weight lowered MRR on every step. The test gain was under the 0.03 bar and its interval includes zero.
+
+Limits: the test set had already been scored once, for the reranker, so this was its second use, with a single candidate and a strict rule. Picking the best of 7 weights on dev makes the dev number optimistic. The result is about one BM25 setup (stemming on, stopwords removed, no titles) on this corpus and these queries, so it does not show that hybrid search cannot help. Adopting a hybrid would also mean loading a keyword index into the server, which was not measured.
+
 ### Experiment: article titles in the searched text
 
 Chunks often don't say what their article is about, because the title carries that. I tested adding the title to the text that is embedded and indexed for BM25, on 30 development queries (`eval/retrieval_dev.csv`). The rule for adopting it was fixed before the run: semantic MRR must rise by at least 0.03 without lowering hit@10.
