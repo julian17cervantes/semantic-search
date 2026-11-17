@@ -65,6 +65,10 @@ class Searcher:
         hits, timings = self._retrieve(query, k, rerank=False)
         return hits, timings["encode_ms"], timings["search_ms"]
 
+    def retrieve_hits(self, query, k=5, rerank=False):
+        hits, _ = self._retrieve(query, k, rerank)
+        return hits
+
     def search(self, query, k=5, rerank=False):
         hits, timings = self._retrieve(query, k, rerank)
         results = []

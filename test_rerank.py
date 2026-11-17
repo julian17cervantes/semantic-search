@@ -104,3 +104,15 @@ def test_plain_text_is_given_to_the_reranker_when_titles_are_disabled(monkeypatc
     client, reranker = make([0.5, 0.5, 0.5])
     client.get("/search", params={"q": "x", "k": 1, "rerank": "true"})
     assert reranker.calls[0][0] == ("x", "text about C")
+
+def test_retrieve_hits_returns_full_text_and_can_rerank():
+    make([0.1, 0.9, 0.5])
+    hits = app.state.searcher.retrieve_hits("x", k=2, rerank=True)
+    assert [h["title"] for h in hits] == ["A", "B"]
+    assert hits[0]["text"] == "text about A"
+
+
+def test_retrieve_hits_without_rerank_keeps_the_semantic_order():
+    make([0.1, 0.9, 0.5])
+    hits = app.state.searcher.retrieve_hits("x", k=2)
+    assert [h["title"] for h in hits] == ["C", "A"]
