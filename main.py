@@ -10,6 +10,10 @@ from answerer import Answerer
 
 import rerank_settings as rs
 
+import rag_settings
+
+from rag import LLMUnavailable, OllamaClient, Rag
+
 EF_SEARCH = 64
 
 
@@ -38,6 +42,10 @@ async def lifespan(app):
 
     app.state.searcher = searcher
     app.state.answerer = Answerer(searcher, reader)
+    app.state.rag = Rag(
+        lambda q: searcher.retrieve_hits(q, k=rag_settings.SOURCES_PER_QUESTION, rerank=True),
+        OllamaClient(rag_settings.RAG_MODEL),
+    )
     yield
 
 
@@ -76,3 +84,26 @@ def answer(request: Request, q: str = Query(..., max_length=500)):
     if not q.strip():
         raise HTTPException(status_code=400, detail="Question must not be empty")
     return request.app.state.answerer.answer(q.strip())
+
+@app.get("/rag")
+def rag_answer(request: Request, q: str = Query(..., max_length=500)):
+    if not q.strip():
+        raise HTTPException(status_code=400, detail="Question must not be empty")
+    try:
+        result = request.app.state.rag.answer(q.strip())
+    except LLMUnavailable as error:
+        raise HTTPException(status_code=503, detail=str(error))
+    sources = result["sources"]
+    return {
+        "question": result["question"],
+        "answer": result["answer"],
+        "abstained": result["abstained"],
+        "citations": [
+            {"number": n, "title": sources[n - 1]["title"], "url": sources[n - 1]["url"]}
+            for n in result["citations"]
+        ],
+        "sources": sources,
+        "model": rag_settings.RAG_MODEL,
+        "retrieve_ms": result["retrieve_ms"],
+        "llm_ms": result["llm_ms"],
+    }
