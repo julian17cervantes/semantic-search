@@ -1,0 +1,2 @@
+RAG_MODEL = "llama3.1:8b"
+SOURCES_PER_QUESTION = 5
