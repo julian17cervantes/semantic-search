@@ -199,12 +199,23 @@ The data, embeddings, and indexes are large (the HNSW index is about 530 MB) and
 
 A note for Mac users: loading `faiss` before `torch` crashed with a segmentation fault on the machine this was built on, so the scripts that load the reader import `torch` first.
 
+### Running the RAG endpoint
+
+```bash
+ollama pull llama3.1:8b
+uvicorn main:app
+curl -G "http://127.0.0.1:8000/rag" --data-urlencode "q=What is the capital of Australia?"
+```
+
+The endpoint uses the settings that were evaluated: the top 20 semantic results reranked, five numbered sources, and a fixed prompt. It returns the answer (or `null` with `abstained: true`), the cited sources, and timings. If Ollama is not running, it returns 503 and the other endpoints keep working. Requests are handled one at a time, and concurrent load was not measured.
+
 ## API
 
 | Method | Path | Description |
 | --- | --- | --- |
 | GET | /search?q=...&k=5 | Top matching chunks, with encode and search time |
 | GET | /answer?q=... | A short answer, its source article, a confidence label, and timings |
+| GET | /rag?q=... | A cited answer from a local language model (needs Ollama; returns 503 if it is not running) |
 | GET | /health | Health check |
 
 ## Tests

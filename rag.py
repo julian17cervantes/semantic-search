@@ -1,4 +1,5 @@
 import re
+import threading
 import time
 
 ABSTAIN = "I can't tell from the sources."
@@ -20,6 +21,10 @@ def _squash(text):
 _ABSTAIN_START = _squash(ABSTAIN).rstrip(".")
 
 
+class LLMUnavailable(RuntimeError):
+    """The language model could not be reached, or the package that talks to it is missing."""
+
+
 def build_messages(question, hits, system_prompt=SYSTEM_PROMPT):
     sources = "\n".join(f"[{i}] {h['title']}: {h['text']}" for i, h in enumerate(hits, 1))
     return [
@@ -29,10 +34,8 @@ def build_messages(question, hits, system_prompt=SYSTEM_PROMPT):
 
 
 def parse_answer(raw, num_sources):
-    """Decide whether the model abstained, and which of the numbered sources it cited."""
     text = raw.strip()
     if _squash(text).startswith(_ABSTAIN_START):
-        # Anything after the fallback sentence is ignored, including citations
         return {"abstained": True, "answer": None, "citations": [], "invalid_citations": [], "has_citation": False}
     cited = []
     for group in _CITATION.findall(text):
@@ -51,8 +54,17 @@ def parse_answer(raw, num_sources):
     }
 
 
+def _get(response, name):
+    value = getattr(response, name, None)
+    if value is None:
+        try:
+            value = response[name]
+        except (KeyError, TypeError, IndexError):
+            value = None
+    return value
+
+
 class OllamaClient:
-    """Calls a local model through Ollama. Returns (text, info)."""
 
     def __init__(self, model, num_predict=120, seed=0):
         self.model = model
@@ -60,30 +72,43 @@ class OllamaClient:
         self.seed = seed
 
     def generate(self, messages):
-        import ollama
+        try:
+            import ollama
+        except ImportError as error:
+            raise LLMUnavailable("The ollama Python package is not installed.") from error
 
-        response = ollama.chat(
-            model=self.model,
-            messages=messages,
-            options={"temperature": 0, "seed": self.seed, "num_predict": self.num_predict},
-        )
+        try:
+            response = ollama.chat(
+                model=self.model,
+                messages=messages,
+                options={"temperature": 0, "seed": self.seed, "num_predict": self.num_predict},
+            )
+        except (ConnectionError, ollama.ResponseError) as error:
+            raise LLMUnavailable(
+                f"The language model is not available. Start Ollama and run: ollama pull {self.model}"
+            ) from error
+
         info = {
             "model": self.model,
-            "seconds": (getattr(response, "total_duration", None) or 0) / 1e9,
-            "prompt_tokens": getattr(response, "prompt_eval_count", None),
-            "output_tokens": getattr(response, "eval_count", None),
+            "seconds": (_get(response, "total_duration") or 0) / 1e9,
+            "prompt_tokens": _get(response, "prompt_eval_count"),
+            "output_tokens": _get(response, "eval_count"),
         }
         return response["message"]["content"], info
 
 
 class Rag:
     def __init__(self, retrieve, llm, system_prompt=SYSTEM_PROMPT):
-        """retrieve(question) returns hits (dicts with title, url, text); llm.generate(messages) returns (text, info)."""
         self.retrieve = retrieve
         self.llm = llm
         self.system_prompt = system_prompt
+        self._lock = threading.Lock()
 
     def answer(self, question):
+        with self._lock:
+            return self._answer(question)
+
+    def _answer(self, question):
         t0 = time.perf_counter()
         hits = self.retrieve(question)
         retrieve_ms = round((time.perf_counter() - t0) * 1000, 2)
