@@ -1,0 +1,136 @@
+{
+  "file": "/tmp/rag_unans_for_extractive.csv",
+  "questions": 15,
+  "answered": 1,
+  "correct": 0,
+  "wrong": 1,
+  "ms_per_question": 232,
+  "settings": {
+    "read_top_k": 10,
+    "use_titles": true,
+    "no_answer_below": 0.5,
+    "confident_from": 1.0
+  },
+  "outcomes": [
+    {
+      "question": "Who is the current king of the lost city of El Dorado?",
+      "answer": null,
+      "score": 0.0,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "What is the email address of the Statue of Liberty?",
+      "answer": null,
+      "score": 0.0,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "What will the stock market do next week?",
+      "answer": null,
+      "score": 0.0,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "Who will be the president in the year 2100?",
+      "answer": null,
+      "score": 0.0,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "What did Cleopatra say to her cat this morning?",
+      "answer": null,
+      "score": 0.0,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "What was Beethoven's favorite flavor of ice cream?",
+      "answer": null,
+      "score": 0.0,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "What is the Wi-Fi password of the White House?",
+      "answer": null,
+      "score": 0.0,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "How many pigeons live in Trafalgar Square right now?",
+      "answer": null,
+      "score": 0.0,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "What is the phone number of the nearest pizza shop to the Taj Mahal?",
+      "answer": null,
+      "score": 0.0,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "What is the middle name of the tallest tree in Yellowstone?",
+      "answer": null,
+      "score": 0.0,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "Who was the best chess player on the island of Utopia?",
+      "answer": "Leinier Dom\u00ednguez",
+      "score": 0.596,
+      "confidence": "low",
+      "source": "Leinier Dom\u00ednguez",
+      "correct": false
+    },
+    {
+      "question": "What did Albert Einstein dream about last night?",
+      "answer": null,
+      "score": 0.0,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "How many steps did Marco Polo walk on his third birthday?",
+      "answer": null,
+      "score": 0.0,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "Which planet in the Andromeda galaxy has the most oceans?",
+      "answer": null,
+      "score": 0.0,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "What is the name of the first dragon ever tamed?",
+      "answer": null,
+      "score": 0.416,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    }
+  ]
+}

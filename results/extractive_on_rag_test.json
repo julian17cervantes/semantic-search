@@ -1,0 +1,256 @@
+{
+  "file": "eval/rag_test_answerable.csv",
+  "questions": 30,
+  "answered": 28,
+  "correct": 27,
+  "wrong": 1,
+  "ms_per_question": 212,
+  "settings": {
+    "read_top_k": 10,
+    "use_titles": true,
+    "no_answer_below": 0.5,
+    "confident_from": 1.0
+  },
+  "outcomes": [
+    {
+      "question": "What is the capital of Argentina?",
+      "answer": "Buenos Aires",
+      "score": 2.478,
+      "confidence": "high",
+      "source": "Argentina",
+      "correct": true
+    },
+    {
+      "question": "What is the capital of Turkey?",
+      "answer": "Ankara",
+      "score": 0.877,
+      "confidence": "low",
+      "source": "Turkey",
+      "correct": true
+    },
+    {
+      "question": "What is the capital of Kenya?",
+      "answer": "Nairobi",
+      "score": 3.044,
+      "confidence": "high",
+      "source": "Kenya",
+      "correct": true
+    },
+    {
+      "question": "What is the capital of Thailand?",
+      "answer": "Bangkok",
+      "score": 2.289,
+      "confidence": "high",
+      "source": "Ayutthaya Kingdom",
+      "correct": true
+    },
+    {
+      "question": "What is the capital of Poland?",
+      "answer": "Warsaw",
+      "score": 1.399,
+      "confidence": "high",
+      "source": "Poland",
+      "correct": true
+    },
+    {
+      "question": "Who wrote Don Quixote?",
+      "answer": "Miguel de Cervantes",
+      "score": 2.274,
+      "confidence": "high",
+      "source": "Don Quixote",
+      "correct": true
+    },
+    {
+      "question": "Who wrote Les Mis\u00e9rables?",
+      "answer": "Victor Hugo",
+      "score": 4.838,
+      "confidence": "high",
+      "source": "\u00c9ponine",
+      "correct": true
+    },
+    {
+      "question": "Who wrote War and Peace?",
+      "answer": "Leo Tolstoy",
+      "score": 0.98,
+      "confidence": "low",
+      "source": "War and Peace",
+      "correct": true
+    },
+    {
+      "question": "Who wrote The Hobbit?",
+      "answer": "J. R. R. Tolkien",
+      "score": 3.712,
+      "confidence": "high",
+      "source": "Tauriel",
+      "correct": true
+    },
+    {
+      "question": "Who wrote the Harry Potter books?",
+      "answer": "J. K. Rowling",
+      "score": 4.84,
+      "confidence": "high",
+      "source": "Harry Potter (movie series)",
+      "correct": true
+    },
+    {
+      "question": "Who wrote The Divine Comedy?",
+      "answer": "Dante Alighieri",
+      "score": 1.957,
+      "confidence": "high",
+      "source": "Divine Comedy",
+      "correct": true
+    },
+    {
+      "question": "Who wrote Frankenstein?",
+      "answer": "Mary Shelley",
+      "score": 5.467,
+      "confidence": "high",
+      "source": "Igor (character)",
+      "correct": true
+    },
+    {
+      "question": "Who was the first person to travel into space?",
+      "answer": "Yuri Gagarin",
+      "score": 3.849,
+      "confidence": "high",
+      "source": "Vostok (rocket family)",
+      "correct": true
+    },
+    {
+      "question": "Who was the first woman prime minister of the United Kingdom?",
+      "answer": "Margaret Thatcher",
+      "score": 1.805,
+      "confidence": "high",
+      "source": "1979 United Kingdom general election",
+      "correct": true
+    },
+    {
+      "question": "Who was the first Chancellor of the German Empire?",
+      "answer": "Otto von Bismarck",
+      "score": 0.645,
+      "confidence": "low",
+      "source": "List of chancellors of Germany",
+      "correct": true
+    },
+    {
+      "question": "Who was the Greek philosopher who taught Alexander the Great?",
+      "answer": "Aristotle",
+      "score": 2.302,
+      "confidence": "high",
+      "source": "Alexander the Great",
+      "correct": true
+    },
+    {
+      "question": "In what year did the Soviet Union dissolve?",
+      "answer": "1991",
+      "score": 1.523,
+      "confidence": "high",
+      "source": "Soviet Union",
+      "correct": true
+    },
+    {
+      "question": "In what year did World War I begin?",
+      "answer": "1914",
+      "score": 0.865,
+      "confidence": "low",
+      "source": "World War I",
+      "correct": true
+    },
+    {
+      "question": "In what year did the American Civil War begin?",
+      "answer": "1861",
+      "score": 1.177,
+      "confidence": "high",
+      "source": "Confederate States of America",
+      "correct": true
+    },
+    {
+      "question": "In which country is the city of Kyoto?",
+      "answer": "Japan",
+      "score": 3.718,
+      "confidence": "high",
+      "source": "Kyoto Station",
+      "correct": true
+    },
+    {
+      "question": "In which country is the city of Marrakech?",
+      "answer": "Morocco",
+      "score": 2.499,
+      "confidence": "high",
+      "source": "Marrakesh",
+      "correct": true
+    },
+    {
+      "question": "What is the largest lake in Africa?",
+      "answer": "Lake Victoria",
+      "score": 0.551,
+      "confidence": "low",
+      "source": "Lake",
+      "correct": true
+    },
+    {
+      "question": "What is the smallest ocean?",
+      "answer": "Arctic Ocean",
+      "score": 0.703,
+      "confidence": "low",
+      "source": "Ocean",
+      "correct": true
+    },
+    {
+      "question": "What is the largest bird?",
+      "answer": null,
+      "score": 0.301,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "What is the main gas in Earth's atmosphere?",
+      "answer": "nitrogen",
+      "score": 0.863,
+      "confidence": "low",
+      "source": "Atmosphere of Earth",
+      "correct": true
+    },
+    {
+      "question": "What is the closest star to Earth?",
+      "answer": "Proxima Centauri",
+      "score": 0.885,
+      "confidence": "low",
+      "source": "Red dwarf",
+      "correct": false
+    },
+    {
+      "question": "What is the freezing point of water in Fahrenheit?",
+      "answer": "32\u00b0",
+      "score": 0.908,
+      "confidence": "low",
+      "source": "Fahrenheit",
+      "correct": true
+    },
+    {
+      "question": "Which element has the atomic number 1?",
+      "answer": null,
+      "score": 0.0,
+      "confidence": "none",
+      "source": null,
+      "correct": false
+    },
+    {
+      "question": "What is the largest city in Canada?",
+      "answer": "Toronto",
+      "score": 1.844,
+      "confidence": "high",
+      "source": "Canada",
+      "correct": true
+    },
+    {
+      "question": "What is the currency of the United Kingdom?",
+      "answer": "pound sterling",
+      "score": 2.898,
+      "confidence": "high",
+      "source": "Pound sign",
+      "correct": true
+    }
+  ]
+}
