@@ -143,6 +143,43 @@ The settings were chosen on 25 tuning questions and frozen in `answer_settings.p
 
 That is 22 of 30 correct overall, roughly 56% to 86% allowing for the small sample, and 22 of 23 correct among the answers given. Over 100 requests to GET /answer (one at a time, on a laptop GPU), the median was 193.3 ms and the p95 was 249.6 ms, of which reading the 10 chunks took a median of 186.7 ms.
 
+## Answer generation with a local language model (RAG)
+
+A second answer path, `rag.py`, retrieves and reranks sources, then asks a local language model (Ollama, no API cost) to answer from five numbered sources and cite them. The model must reply with a fixed fallback sentence when the sources don't contain the answer, and the parser checks that every cited number exists.
+
+**Setup and evaluation plan, fixed before scoring** (`docs/rag_eval_plan.md`): two candidates, `gemma3:4b` and `llama3.1:8b`, were chosen from a four-case smoke test. The prompt and the retrieval context (top 20 semantic results reranked, 5 sources) were frozen. The model was chosen on 25 answerable and 15 unanswerable dev questions by a rule written in advance: most grounded-correct answers, then more abstentions on unanswerable questions, then the smaller model. The test sets (30 answerable and 15 unanswerable fresh questions) were scored once.
+
+| Dev sets | gemma3:4b | llama3.1:8b |
+| --- | --- | --- |
+| Grounded-correct (25 answerable) | 23 | 23 |
+| Correct | 24 | 23 |
+| Abstained on unanswerable (15) | 12 | 15 |
+| Median time per question | 2.9 s | 5.3 s |
+
+The two tied on grounded-correct, so the abstention rule selected `llama3.1:8b`. The gap in abstentions is 3 questions, so the dev set did not separate the models much.
+
+**Test results, 95% intervals in brackets:**
+
+| | RAG (llama3.1:8b) | Extractive reader |
+| --- | --- | --- |
+| Correct, answerable (30) | 28 [79%-98%] | 27 [74%-97%] |
+| Grounded in a cited source | 27 [74%-97%] | not measured |
+| Abstained on unanswerable (15) | 15 [80%-100%] | 14 [70%-99%] |
+| Valid citations among answers | 29 of 29 | not applicable |
+| Latency per question | median 5.0 s, p95 6.0 s | about 0.2 s |
+
+The two systems differ on one question out of 30, so this evaluation does not show that either is more accurate. The RAG path is about 25 times slower, so it is a separate, opt-in path.
+
+### Limits of this evaluation
+
+- Small, easy sets: the answerable questions are mostly "capital of X" or "who wrote Y", and the unanswerable ones are mostly obviously absurd, so abstention was easy to get right. Intervals are wide.
+- The two systems use different retrieval (RAG: top 20 reranked, 5 sources; extractive: top 10, no reranking), so this compares systems, not generators.
+- A "correct" answer only needs the gold answer to appear as whole words, so it cannot detect a hedged or contradicted answer. "Grounded" checks that a cited source contains the gold answer, not that it supports the claim.
+- One gold answer is debatable: for "What is the closest star to Earth?" I wrote "Sun", and both systems answered Proxima Centauri, which the retrieved sources support. It counts as wrong under the rules fixed beforehand.
+- Failures were retrieval failures: for "largest mammal", none of the five sources mention a blue whale, so no generator could answer from them.
+- The latency was measured one question at a time on one laptop (Apple Silicon, 16 GB) with the model already loaded.
+- The test sets were scored once each. Everything was run with temperature 0 and a fixed seed, but outputs could differ on other hardware or Ollama versions.
+
 ## Limitations
 
 - The retrieval test set is small (27 queries), so each query moves a score by about 4 points. I wrote the queries myself, and most are easy factual questions.
