@@ -1,8 +1,7 @@
 # Semantic Search
 
-![Tests](https://github.com/julian17cervantes/semantic-search/actions/workflows/tests.yml/badge.svg)
-
-A semantic search engine over Simple English Wikipedia, built end to end: data cleaning, chunking, embeddings, an approximate nearest-neighbor index, a FastAPI service, a benchmark against keyword search, and an extractive question-answering step that turns the retrieved passages into a short answer.
+**[Semantic Search](https://github.com/julian17cervantes/semantic-search)**
+A search and question-answering system over Simple English Wikipedia (308k chunks). A FAISS HNSW index reaches 99.7% recall@10 against exact search at about 20x the speed. On held-out queries written before scoring, a cross-encoder reranker raised MRR from 0.74 to 0.83, and a BM25 hybrid did not beat semantic search alone. Answers come from an extractive reader or a local 8B model (Ollama) with enforced citations: on 45 held-out questions the local model answered 28 of 30 correctly and declined all 15 unanswerable ones, matching the extractive baseline within one question at about 25x the latency. Python, FastAPI, FAISS, Sentence-Transformers, Ollama.
 
 ## Results
 
